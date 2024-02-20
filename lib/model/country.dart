@@ -1,22 +1,30 @@
 class Country {
   String? name;
   String? emoji;
+  String? code;
 
-  Country({
-    this.name,
-    this.emoji,
-  });
+  Country({this.name, this.emoji, this.code});
 
   Country.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     emoji = json['emoji'];
+    code = json['code'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
     data['emoji'] = this.emoji;
+    data['code'] = this.code;
     return data;
+  }
+
+  Country copyWith({String? name, String? emoji, String? code}) {
+    return Country(
+      name: name ?? this.name,
+      emoji: emoji ?? this.emoji,
+      code: code ?? this.code,
+    );
   }
 }
 
