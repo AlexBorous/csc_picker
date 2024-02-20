@@ -5,6 +5,7 @@ import 'package:csc_picker/model/place.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum Layout { vertical, horizontal }
@@ -14,6 +15,7 @@ class CSCPicker extends StatefulWidget {
   const CSCPicker({
     Key? key,
     this.layout = Layout.horizontal,
+    this.position,
     this.showStates = true,
     this.showCities = true,
     this.placeHolder = "Select a place",
@@ -31,11 +33,12 @@ class CSCPicker extends StatefulWidget {
 
   // clear button parameters
   final bool showClearButton;
+  final Position? position;
   final Widget clearButtonContent;
   final bool showSearchBox;
   final bool showFavoriteItems;
   final VoidCallback? onClear;
-  final ValueChanged? onChange;
+  final ValueChanged<Place?>? onChange;
   final ValueChanged<Place>? onSave;
   // title widget
   final Widget? title;
@@ -63,7 +66,7 @@ class CSCPickerState extends State<CSCPicker> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 BlocProvider(
-                  create: (context) => DatabaseCubit(),
+                  create: (context) => DatabaseCubit(widget.position),
                   child: Expanded(
                     child: BlocBuilder<DatabaseCubit, DatabaseState>(
                       builder: (context, state) {

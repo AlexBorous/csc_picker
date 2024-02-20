@@ -7,7 +7,11 @@ import 'package:csc_picker/model/place.dart';
 void refreshData({String? fileName}) async {
   final _fileName = fileName ?? 'data.json';
   final encode = await File(_fileName).readAsString();
-  final compressed = Compress.encode(encode);
+  final updatedPlaces = (jsonDecode(encode) as List).map((e) {
+    return Place.fromJson(e);
+  }).toList();
+  final finalData = jsonEncode(updatedPlaces);
+  final compressed = Compress.encode(finalData);
   await File('$_fileName.gz').writeAsString(compressed);
   final json = await File('$_fileName.gz').readAsString();
   final decoded = Compress.decode(json);

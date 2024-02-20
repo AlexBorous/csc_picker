@@ -20,15 +20,10 @@ class DatabaseState {
 abstract class DB {
   Future<void> init();
   Future<void> dispose();
-  Future<bool> insertPlace(Place place);
-  Future<bool> insertPlaces(List<Place> places);
   Future<List<Place>> getPlaces({int limit = -1, String query = ''});
-  Future<void> initPlaces();
+  Future<void> initPlaces(Position? position);
   bool hasData();
   bool isOpen();
-  Future<List<Place>> getPlacesByCountry(String country);
-  Future<List<Place>> getPlacesByLocation(
-      {required double lat, required double lng});
 }
 
 class LocalDB extends DB {
@@ -63,6 +58,7 @@ class LocalDB extends DB {
           .countryNameStartsWith(word)
           .or()
           .searchWordsElementStartsWith(word)
+          .sortByDistance()
           .limit(10)
           .findAll();
       for (final place in result) {
@@ -82,7 +78,7 @@ class LocalDB extends DB {
   }
 
   @override
-  Future<void> initPlaces() async {
+  Future<void> initPlaces(Position? position) async {
     if (hasData()) return;
     final encodedPlaces = await rootBundle
         .loadString('packages/csc_picker/lib/assets/places.json.gz');
@@ -91,22 +87,17 @@ class LocalDB extends DB {
     final places = (data as List).map((e) {
       return Place.fromJson(e);
     }).toList();
-    places..sort((a, b) => b.population!.compareTo(a.population ?? 0));
-    await isar.writeTxn(() async {
-      isar.places.putAll(sortByDistance(places));
-    });
-  }
-
-  @override
-  Future<List<Place>> getPlacesByCountry(String country) {
-    return isar.places.where().countryNameEqualTo(country).findAll();
-  }
-
-  @override
-  Future<List<Place>> getPlacesByLocation(
-      {required double lat, required double lng}) {
-    // TODO: implement getPlacesByLocation
-    throw UnimplementedError();
+    if (position != null) {
+      final sortedPlaces =
+          sortByDistance(locationlist: places, position: position);
+      await isar.writeTxn(() async {
+        isar.places.putAll(sortedPlaces);
+      });
+    } else {
+      await isar.writeTxn(() async {
+        isar.places.putAll(places);
+      });
+    }
   }
 
   @override
@@ -120,33 +111,8 @@ class LocalDB extends DB {
   }
 
   @override
-  Future<bool> insertPlace(Place place) async {
-    try {
-      await isar.writeTxn(() async {
-        isar.places.put(place);
-      });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  @override
-  Future<bool> insertPlaces(List<Place> places) async {
-    try {
-      await isar.writeTxn(() async {
-        isar.places.putAll(places);
-      });
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  @override
   bool hasData() {
-    final data = isar.places.countSync();
-    return data > 0;
+    return isar.places.countSync() > 0;
   }
 }
 

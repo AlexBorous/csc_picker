@@ -1,5 +1,5 @@
-import 'dart:async';
 import 'dart:convert';
+import 'dart:core';
 import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
@@ -15,12 +15,13 @@ import 'package:string_similarity/string_similarity.dart';
 part 'database_state.dart';
 
 class DatabaseCubit extends Cubit<DatabaseState> {
-  DatabaseCubit() : super(DatabaseState(isar: LocalDB())) {
+  DatabaseCubit(this.position) : super(DatabaseState(isar: LocalDB())) {
     init();
   }
+  final Position? position;
   void init() async {
     await state.isar.init();
-    await state.isar.initPlaces();
+    await state.isar.initPlaces(position);
     if (state.isar.hasData()) {
       log('Data found in database');
       final places = await state.isar.getPlaces();
@@ -68,17 +69,21 @@ Future<void> appendPlaces(String message) async {
   });
 }
 
-double distanceFromMyLocation(Position location) {
-  final mylocation = Position.fromMap(
-    {"latitude": 37.9838, "longitude": 23.7275},
-  );
+double distanceFromMyLocation(
+    {required Position location, required Position mylocation}) {
   double distance = Geolocator.distanceBetween(mylocation.longitude,
           mylocation.latitude, location.longitude, location.latitude) /
       1000;
   return distance;
 }
 
-List<Place> sortByDistance(List<Place> locationlist) {
+List<Place> sortByDistance(
+    {required List<Place> locationlist, required Position position}) {
+  // if (!await Geolocator.isLocationServiceEnabled() ||
+  //     await Geolocator.checkPermission() == LocationPermission.deniedForever) {
+  //   return locationlist;
+  // }
+  // await Geolocator.requestPermission();
   // make this an empty list by intializing with []
   List<Place> locationListWithDistance = [];
 
@@ -87,7 +92,10 @@ List<Place> sortByDistance(List<Place> locationlist) {
     final location = Position.fromMap(
       {"latitude": place.latlng!.lat, "longitude": place.latlng!.lon},
     );
-    double distance = distanceFromMyLocation(location);
+    double distance = distanceFromMyLocation(
+      location: location,
+      mylocation: position,
+    );
 
     locationListWithDistance.add(place.copyWith(
       distance: distance,
