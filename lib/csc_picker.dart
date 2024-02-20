@@ -13,7 +13,7 @@ enum Layout { vertical, horizontal }
 class CSCPicker extends StatefulWidget {
   ///CSC Picker Constructor
   const CSCPicker({
-    Key? key,
+    super.key,
     this.layout = Layout.horizontal,
     this.position,
     this.placeHolder = "Select a place",
@@ -27,9 +27,10 @@ class CSCPicker extends StatefulWidget {
     this.onSave,
     this.dialogBackgroundColor,
     this.dialogHeight,
+    this.itemAsString,
     this.searchPlaceHoldder = "Search for a place",
     this.favoriteItems,
-  }) : super(key: key);
+  });
 
   // clear button parameters
   final bool showClearButton;
@@ -42,6 +43,7 @@ class CSCPicker extends StatefulWidget {
   final ValueChanged<Place?>? onSave;
   final Color? dialogBackgroundColor;
   final double? dialogHeight;
+  final String? itemAsString;
   // title widget
   final Widget? title;
   final String searchPlaceHoldder;
@@ -74,7 +76,7 @@ class CSCPickerState extends State<CSCPicker> {
                           enabled: state.places.isEmpty,
                           child: DropdownSearch<Place>(
                             popupProps: PopupPropsMultiSelection.dialog(
-                              listViewProps: ListViewProps(
+                              listViewProps: const ListViewProps(
                                 padding: EdgeInsets.zero,
                               ),
                               isFilterOnline: true,
@@ -90,7 +92,7 @@ class CSCPickerState extends State<CSCPicker> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 backgroundColor: widget.dialogBackgroundColor ??
-                                    Color(0xFF1C1C20),
+                                    const Color(0xFF1C1C20),
                                 actions: [
                                   widget.showClearButton
                                       ? TextButton(
@@ -104,8 +106,13 @@ class CSCPickerState extends State<CSCPicker> {
                               ),
                               itemBuilder: (BuildContext context, Place? item,
                                   bool isSelected) {
+                                if (item == null) {
+                                  return const SizedBox();
+                                }
                                 return ListTile(
-                                  title: Text(item!.toString()),
+                                  title: Text(
+                                    widget.itemAsString ?? item.toString(),
+                                  ),
                                 );
                               },
                               containerBuilder: (
@@ -130,7 +137,7 @@ class CSCPickerState extends State<CSCPicker> {
                                 labelText: widget.placeHolder,
                               ),
                             ),
-                            clearButtonProps: ClearButtonProps(
+                            clearButtonProps: const ClearButtonProps(
                               isVisible: true,
                             ),
                             asyncItems: (query) async {

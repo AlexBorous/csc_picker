@@ -182,6 +182,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_lints",
+      "rootUri": "file:///Users/alexborousas/.pub-cache/hosted/pub.dev/flutter_lints-3.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///Users/alexborousas/development/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -294,6 +300,12 @@
       "rootUri": "file:///Users/alexborousas/.pub-cache/hosted/pub.dev/json_annotation-4.8.1",
       "packageUri": "lib/",
       "languageVersion": "2.19"
+    },
+    {
+      "name": "lints",
+      "rootUri": "file:///Users/alexborousas/.pub-cache/hosted/pub.dev/lints-3.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "logging",
@@ -584,7 +596,7 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2024-02-20T13:29:55.046493Z",
+  "generated": "2024-02-20T15:26:15.957175Z",
   "generator": "pub",
   "generatorVersion": "3.2.6"
 }

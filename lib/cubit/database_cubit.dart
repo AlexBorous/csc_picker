@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:developer';
 
-import 'package:bloc/bloc.dart';
 import 'package:csc_picker/compress/compress.dart';
 import 'package:csc_picker/model/place.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
