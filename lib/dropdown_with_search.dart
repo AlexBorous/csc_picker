@@ -1,3 +1,4 @@
+import 'package:csc_picker/model/place.dart';
 import 'package:flutter/material.dart';
 
 class DropdownWithSearch<T> extends StatelessWidget {
@@ -14,7 +15,7 @@ class DropdownWithSearch<T> extends StatelessWidget {
   final double? dialogRadius;
   final bool disabled;
   final String label;
-
+  final Future<List<Place>> Function(String filter) filterPlaces;
   final Function onChanged;
 
   const DropdownWithSearch(
@@ -24,6 +25,7 @@ class DropdownWithSearch<T> extends StatelessWidget {
       required this.items,
       required this.selected,
       required this.onChanged,
+      required this.filterPlaces,
       this.selectedItemPadding,
       this.selectedItemStyle,
       this.dropdownHeadingStyle,
@@ -50,19 +52,13 @@ class DropdownWithSearch<T> extends StatelessWidget {
                   searchInputRadius: searchBarRadius,
                   dialogRadius: dialogRadius,
                   titleStyle: dropdownHeadingStyle,
+                  filterPlaces: filterPlaces,
                   itemStyle: itemStyle,
-                  items: items)).then((value) {
-            onChanged(value);
-            /* if(value!=null)
-                    {
-                      onChanged(value);
-                      _lastSelected = value;
-                    }
-                    else {
-                      print("Value NULL $value $_lastSelected");
-                      onChanged(_lastSelected);
-                    }*/
-          });
+                  items: items)).then(
+            (value) {
+              onChanged(value);
+            },
+          );
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -104,7 +100,7 @@ class SearchDialog extends StatefulWidget {
   final TextStyle? titleStyle;
   final TextStyle? itemStyle;
   final double? searchInputRadius;
-
+  final Future<List<Place>> Function(String filter) filterPlaces;
   final double? dialogRadius;
 
   const SearchDialog(
@@ -112,6 +108,7 @@ class SearchDialog extends StatefulWidget {
       required this.title,
       required this.placeHolder,
       required this.items,
+      required this.filterPlaces,
       this.titleStyle,
       this.searchInputRadius,
       this.dialogRadius,
@@ -134,12 +131,9 @@ class _SearchDialogState<T> extends State<SearchDialog> {
         if (textController.text.isEmpty) {
           filteredList = widget.items;
         } else {
-          filteredList = widget.items
-              .where((element) => element
-                  .toString()
-                  .toLowerCase()
-                  .contains(textController.text.toLowerCase()))
-              .toList();
+          widget.filterPlaces(textController.text).then(
+                (value) => filteredList = value,
+              );
         }
       });
     });
