@@ -16,8 +16,6 @@ class CSCPicker extends StatefulWidget {
     Key? key,
     this.layout = Layout.horizontal,
     this.position,
-    this.showStates = true,
-    this.showCities = true,
     this.placeHolder = "Select a place",
     this.title,
     this.clearButtonContent = const Text("Clear"),
@@ -27,6 +25,8 @@ class CSCPicker extends StatefulWidget {
     this.onClear,
     this.onChange,
     this.onSave,
+    this.dialogBackgroundColor,
+    this.dialogHeight,
     this.searchPlaceHoldder = "Search for a place",
     this.favoriteItems,
   }) : super(key: key);
@@ -39,14 +39,14 @@ class CSCPicker extends StatefulWidget {
   final bool showFavoriteItems;
   final VoidCallback? onClear;
   final ValueChanged<Place?>? onChange;
-  final ValueChanged<Place>? onSave;
+  final ValueChanged<Place?>? onSave;
+  final Color? dialogBackgroundColor;
+  final double? dialogHeight;
   // title widget
   final Widget? title;
   final String searchPlaceHoldder;
   final List<Place> Function(List<Place>)? favoriteItems;
 
-  ///Parameters to change style of CSC Picker
-  final bool showStates, showCities;
   final Layout layout;
 
   final String placeHolder;
@@ -89,7 +89,8 @@ class CSCPickerState extends State<CSCPicker> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                backgroundColor: Color(0xFF1C1C20),
+                                backgroundColor: widget.dialogBackgroundColor ??
+                                    Color(0xFF1C1C20),
                                 actions: [
                                   widget.showClearButton
                                       ? TextButton(
@@ -112,7 +113,7 @@ class CSCPickerState extends State<CSCPicker> {
                                 Widget? child,
                               ) {
                                 return Container(
-                                  height: 300,
+                                  height: widget.dialogHeight ?? 300,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -141,7 +142,7 @@ class CSCPickerState extends State<CSCPicker> {
                               widget.onChange?.call(value);
                             },
                             onSaved: (newValue) {
-                              widget.onSave?.call(newValue!);
+                              widget.onSave?.call(newValue);
                             },
                           ),
                         );
