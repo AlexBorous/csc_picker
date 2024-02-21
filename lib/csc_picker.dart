@@ -79,8 +79,14 @@ class CSCPickerState extends State<CSCPicker> {
                               listViewProps: const ListViewProps(
                                 padding: EdgeInsets.zero,
                               ),
+                              scrollbarProps: const ScrollbarProps(
+                                radius: Radius.circular(10),
+                              ),
                               isFilterOnline: true,
                               showSearchBox: true,
+                              loadingBuilder: (context, _) {
+                                return const SizedBox();
+                              },
                               searchDelay: const Duration(milliseconds: 200),
                               searchFieldProps: TextFieldProps(
                                 decoration: InputDecoration(
