@@ -126,6 +126,19 @@ const PlaceSchema = CollectionSchema(
         )
       ],
     ),
+    r'timeZone': IndexSchema(
+      id: -3128481430007503854,
+      name: r'timeZone',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'timeZone',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
     r'countryName': IndexSchema(
       id: -1763007470810089281,
       name: r'countryName',
@@ -348,6 +361,14 @@ extension PlaceQueryWhereSort on QueryBuilder<Place, Place, QWhere> {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'asciiName'),
+      );
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhere> anyTimeZone() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'timeZone'),
       );
     });
   }
@@ -699,6 +720,142 @@ extension PlaceQueryWhere on QueryBuilder<Place, Place, QWhereClause> {
             ))
             .addWhereClause(IndexWhereClause.lessThan(
               indexName: r'asciiName',
+              upper: [''],
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneEqualTo(
+      String timeZone) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'timeZone',
+        value: [timeZone],
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneNotEqualTo(
+      String timeZone) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeZone',
+              lower: [],
+              upper: [timeZone],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeZone',
+              lower: [timeZone],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeZone',
+              lower: [timeZone],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'timeZone',
+              lower: [],
+              upper: [timeZone],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneGreaterThan(
+    String timeZone, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeZone',
+        lower: [timeZone],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneLessThan(
+    String timeZone, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeZone',
+        lower: [],
+        upper: [timeZone],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneBetween(
+    String lowerTimeZone,
+    String upperTimeZone, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeZone',
+        lower: [lowerTimeZone],
+        includeLower: includeLower,
+        upper: [upperTimeZone],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneStartsWith(
+      String TimeZonePrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'timeZone',
+        lower: [TimeZonePrefix],
+        upper: ['$TimeZonePrefix\u{FFFFF}'],
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'timeZone',
+        value: [''],
+      ));
+    });
+  }
+
+  QueryBuilder<Place, Place, QAfterWhereClause> timeZoneIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'timeZone',
+              upper: [''],
+            ))
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'timeZone',
+              lower: [''],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'timeZone',
+              lower: [''],
+            ))
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'timeZone',
               upper: [''],
             ));
       }

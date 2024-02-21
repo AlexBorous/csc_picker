@@ -14,16 +14,20 @@ import 'package:string_similarity/string_similarity.dart';
 part 'database_state.dart';
 
 class DatabaseCubit extends Cubit<DatabaseState> {
-  DatabaseCubit(this.position) : super(DatabaseState(isar: LocalDB())) {
+  DatabaseCubit({
+    required this.timezone,
+    this.position,
+  }) : super(DatabaseState(isar: LocalDB())) {
     init();
   }
+  final String timezone;
   final Position? position;
   void init() async {
     await state.isar.init();
     await state.isar.initPlaces(position);
     if (state.isar.hasData()) {
       debugPrint('Data found in database');
-      final places = await state.isar.getPlaces();
+      final places = await state.isar.getPlaces(timezone: timezone);
       emit(state.copyWith(places: [...places]));
     } else {
       debugPrint('No data found in database');
@@ -34,7 +38,8 @@ class DatabaseCubit extends Cubit<DatabaseState> {
     if (query.isEmpty) {
       return state.places;
     }
-    final places = await state.isar.getPlaces(query: query.toLowerCase());
+    final places = await state.isar
+        .getPlaces(query: query.toLowerCase(), timezone: timezone);
     emit(state.copyWith(places: [...places]));
     return places;
   }

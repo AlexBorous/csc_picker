@@ -11,6 +11,7 @@ class Place {
   @Index(caseSensitive: false, type: IndexType.value)
   final String asciiName;
   final String code;
+  @Index(caseSensitive: false, type: IndexType.value)
   final String timeZone;
   final int? population;
   final String? modificationDate;

@@ -20,7 +20,8 @@ class DatabaseState {
 abstract class DB {
   Future<void> init();
   Future<void> dispose();
-  Future<List<Place>> getPlaces({int limit = -1, String query = ''});
+  Future<List<Place>> getPlaces(
+      {int limit = -1, String query = '', required String timezone});
   Future<void> initPlaces(Position? position);
   bool hasData();
   bool isOpen();
@@ -40,9 +41,18 @@ class LocalDB extends DB {
   }
 
   @override
-  Future<List<Place>> getPlaces({int limit = 10, String query = ''}) async {
+  Future<List<Place>> getPlaces({
+    required String timezone,
+    int limit = 10,
+    String query = '',
+  }) async {
     if (query.isEmpty) {
-      return isar.places.where().sortByDistance().limit(10).findAll();
+      return isar.places
+          .where()
+          .timeZoneEqualTo(timezone)
+          .sortByPopulationDesc()
+          .limit(limit)
+          .findAll();
     }
     final formattedQuery = Isar.splitWords(query);
     final List<Place> places = List.empty(growable: true);
@@ -58,8 +68,8 @@ class LocalDB extends DB {
           .countryNameStartsWith(word)
           .or()
           .searchWordsElementStartsWith(word)
-          .sortByDistance()
-          .limit(10)
+          .sortByPopulationDesc()
+          .limit(limit)
           .findAll();
       for (final place in result) {
         if (!places.contains(place)) {
@@ -121,7 +131,6 @@ class LocalDB extends DB {
         location: location,
         mylocation: position,
       );
-
       locationListWithDistance.add(place.copyWith(
         distance: distance,
       ));
@@ -137,7 +146,6 @@ class LocalDB extends DB {
   Future<void> init() async {
     if (Isar.getInstance('places') != null) {
       isar = Isar.getInstance('places')!;
-      return;
     }
     debugPrint('Initializing database');
     final dir = await getApplicationDocumentsDirectory();

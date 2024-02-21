@@ -14,6 +14,7 @@ class CSCPicker extends StatefulWidget {
   ///CSC Picker Constructor
   const CSCPicker({
     super.key,
+    required this.timezone,
     this.layout = Layout.horizontal,
     this.position,
     this.placeHolder = "Select a place",
@@ -31,7 +32,7 @@ class CSCPicker extends StatefulWidget {
     this.searchPlaceHoldder = "Search for a place",
     this.favoriteItems,
   });
-
+  final String timezone;
   // clear button parameters
   final bool showClearButton;
   final Position? position;
@@ -62,108 +63,107 @@ class CSCPickerState extends State<CSCPicker> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                BlocProvider(
-                  create: (context) => DatabaseCubit(widget.position),
-                  child: Expanded(
-                    child: BlocBuilder<DatabaseCubit, DatabaseState>(
-                      builder: (context, state) {
-                        return Skeletonizer(
-                          enabled: state.places.isEmpty,
-                          child: DropdownSearch<Place>(
-                            popupProps: PopupPropsMultiSelection.dialog(
-                              listViewProps: const ListViewProps(
-                                padding: EdgeInsets.zero,
-                              ),
-                              scrollbarProps: const ScrollbarProps(
-                                radius: Radius.circular(10),
-                              ),
-                              isFilterOnline: true,
-                              showSearchBox: true,
-                              loadingBuilder: (context, _) {
-                                return const SizedBox();
-                              },
-                              searchDelay: const Duration(milliseconds: 200),
-                              searchFieldProps: TextFieldProps(
-                                decoration: InputDecoration(
-                                  labelText: widget.searchPlaceHoldder,
-                                ),
-                              ),
-                              dialogProps: DialogProps(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: widget.dialogBackgroundColor ??
-                                    const Color(0xFF1C1C20),
-                                actions: [
-                                  widget.showClearButton
-                                      ? TextButton(
-                                          onPressed: () {
-                                            widget.onClear?.call();
-                                          },
-                                          child: widget.clearButtonContent,
-                                        )
-                                      : Container(),
-                                ],
-                              ),
-                              itemBuilder: (BuildContext context, Place? item,
-                                  bool isSelected) {
-                                if (item == null) {
-                                  return const SizedBox();
-                                }
-                                return ListTile(
-                                  title: Text(
-                                    widget.itemAsString ?? item.toString(),
-                                  ),
-                                );
-                              },
-                              containerBuilder: (
-                                BuildContext context,
-                                Widget? child,
-                              ) {
-                                return Container(
-                                  height: widget.dialogHeight ?? 300,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: child!,
-                                );
-                              },
-                              favoriteItemProps: FavoriteItemProps(
-                                showFavoriteItems: widget.showFavoriteItems,
-                                favoriteItems: widget.favoriteItems,
-                              ),
-                            ),
-                            dropdownDecoratorProps: DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
-                                labelText: widget.placeHolder,
-                              ),
-                            ),
-                            clearButtonProps: const ClearButtonProps(
-                              isVisible: true,
-                            ),
-                            asyncItems: (query) async {
-                              return await context
-                                  .read<DatabaseCubit>()
-                                  .filterPlaces(query);
-                            },
-                            onChanged: (value) {
-                              widget.onChange?.call(value);
-                            },
-                            onSaved: (newValue) {
-                              widget.onSave?.call(newValue);
-                            },
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            BlocProvider(
+              create: (context) => DatabaseCubit(
+                timezone: widget.timezone,
+                position: widget.position,
+              ),
+              child: Expanded(
+                child: BlocBuilder<DatabaseCubit, DatabaseState>(
+                  builder: (context, state) {
+                    return Skeletonizer(
+                      enabled: state.places.isEmpty,
+                      child: DropdownSearch<Place>(
+                        popupProps: PopupPropsMultiSelection.dialog(
+                          listViewProps: const ListViewProps(
+                            padding: EdgeInsets.zero,
                           ),
-                        );
-                      },
-                    ),
-                  ),
+                          scrollbarProps: const ScrollbarProps(
+                            radius: Radius.circular(10),
+                          ),
+                          isFilterOnline: true,
+                          showSearchBox: true,
+                          loadingBuilder: (context, _) {
+                            return const SizedBox();
+                          },
+                          searchDelay: const Duration(milliseconds: 200),
+                          searchFieldProps: TextFieldProps(
+                            decoration: InputDecoration(
+                              labelText: widget.searchPlaceHoldder,
+                            ),
+                          ),
+                          dialogProps: DialogProps(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: widget.dialogBackgroundColor ??
+                                const Color(0xFF1C1C20),
+                            actions: [
+                              widget.showClearButton
+                                  ? TextButton(
+                                      onPressed: () {
+                                        widget.onClear?.call();
+                                      },
+                                      child: widget.clearButtonContent,
+                                    )
+                                  : Container(),
+                            ],
+                          ),
+                          itemBuilder: (BuildContext context, Place? item,
+                              bool isSelected) {
+                            if (item == null) {
+                              return const SizedBox();
+                            }
+                            return ListTile(
+                              title: Text(
+                                widget.itemAsString ?? item.toString(),
+                              ),
+                            );
+                          },
+                          containerBuilder: (
+                            BuildContext context,
+                            Widget? child,
+                          ) {
+                            return Container(
+                              height: widget.dialogHeight ?? 300,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: child!,
+                            );
+                          },
+                          favoriteItemProps: FavoriteItemProps(
+                            showFavoriteItems: widget.showFavoriteItems,
+                            favoriteItems: widget.favoriteItems,
+                          ),
+                        ),
+                        dropdownDecoratorProps: DropDownDecoratorProps(
+                          dropdownSearchDecoration: InputDecoration(
+                            labelText: widget.placeHolder,
+                          ),
+                        ),
+                        clearButtonProps: const ClearButtonProps(
+                          isVisible: true,
+                        ),
+                        asyncItems: (query) async {
+                          return await context
+                              .read<DatabaseCubit>()
+                              .filterPlaces(query);
+                        },
+                        onChanged: (value) {
+                          widget.onChange?.call(value);
+                        },
+                        onSaved: (newValue) {
+                          widget.onSave?.call(newValue);
+                        },
+                      ),
+                    );
+                  },
                 ),
-              ],
+              ),
             ),
           ],
         ),
