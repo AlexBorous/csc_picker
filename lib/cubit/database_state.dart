@@ -103,38 +103,6 @@ class LocalDB extends DB {
     });
   }
 
-  // double distanceFromMyLocation(
-  //     {required Position location, required Position mylocation}) {
-  //   double distance = Geolocator.distanceBetween(mylocation.longitude,
-  //           mylocation.latitude, location.longitude, location.latitude) /
-  //       1000;
-  //   return distance;
-  // }
-
-  // List<Place> sortByDistance(
-  //     {required List<Place> locationlist, required Position position}) {
-  //   List<Place> locationListWithDistance = [];
-
-  //   // associate location with distance
-  //   for (var place in locationlist) {
-  //     final location = Position.fromMap(
-  //       {"latitude": place.latlng!.lat, "longitude": place.latlng!.lon},
-  //     );
-  //     double distance = distanceFromMyLocation(
-  //       location: location,
-  //       mylocation: position,
-  //     );
-  //     locationListWithDistance.add(place.copyWith(
-  //       distance: distance,
-  //     ));
-  //   }
-  //   locationListWithDistance.sort((a, b) {
-  //     return a.distance?.compareTo(b.distance ?? 0) ?? 0;
-  //   });
-
-  //   return locationListWithDistance;
-  // }
-
   @override
   Future<void> init() async {
     if (Isar.getInstance('places') != null) {

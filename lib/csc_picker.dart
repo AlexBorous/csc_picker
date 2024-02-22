@@ -57,6 +57,14 @@ class CSCPicker extends StatefulWidget {
 
 class CSCPickerState extends State<CSCPicker> {
   Place? _selectedPlace;
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    _focusNode = FocusNode();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -89,6 +97,7 @@ class CSCPickerState extends State<CSCPicker> {
                           },
                           searchDelay: const Duration(milliseconds: 200),
                           searchFieldProps: TextFieldProps(
+                            focusNode: _focusNode..requestFocus(),
                             decoration: InputDecoration(
                               labelText: widget.searchPlaceHoldder,
                             ),
@@ -173,5 +182,13 @@ class CSCPickerState extends State<CSCPicker> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    if (mounted) {
+      context.read<DatabaseCubit>().close();
+    }
+    super.dispose();
   }
 }

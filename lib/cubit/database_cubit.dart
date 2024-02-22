@@ -22,10 +22,14 @@ class DatabaseCubit extends Cubit<DatabaseState> {
 
   void init() async {
     await state.isar.init();
+    if (state.isar.hasData()) {
+      return;
+    }
     final encodedPlaces = await rootBundle
         .loadString('packages/csc_picker/lib/assets/places.json.gz');
     final rootIsolateToken = RootIsolateToken.instance!;
     final computeData = ComputeData(encodedPlaces, rootIsolateToken);
+
     await compute(appendPlaces, computeData);
     // await state.isar.initPlaces();
     if (state.isar.hasData()) {
@@ -34,6 +38,9 @@ class DatabaseCubit extends Cubit<DatabaseState> {
       emit(state.copyWith(places: [...places]));
     } else {
       debugPrint('No data found in database');
+      await state.isar.initPlaces();
+      final places = await state.isar.getPlaces(timezone: timezone);
+      emit(state.copyWith(places: [...places]));
     }
   }
 
@@ -49,7 +56,9 @@ class DatabaseCubit extends Cubit<DatabaseState> {
 
   @override
   Future<void> close() {
-    state.isar.dispose();
+    if (state.isar.isOpen()) {
+      state.isar.dispose();
+    }
     return super.close();
   }
 }
