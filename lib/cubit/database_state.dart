@@ -22,7 +22,7 @@ abstract class DB {
   Future<void> dispose();
   Future<List<Place>> getPlaces(
       {int limit = -1, String query = '', required String timezone});
-  Future<void> initPlaces(Position? position);
+  Future<void> initPlaces();
   bool hasData();
   bool isOpen();
 }
@@ -88,7 +88,7 @@ class LocalDB extends DB {
   }
 
   @override
-  Future<void> initPlaces(Position? position) async {
+  Future<void> initPlaces() async {
     if (hasData()) return;
     final encodedPlaces = await rootBundle
         .loadString('packages/csc_picker/lib/assets/places.json.gz');
@@ -97,50 +97,43 @@ class LocalDB extends DB {
     final places = (data as List).map((e) {
       return Place.fromJson(e);
     }).toList();
-    if (position != null) {
-      final sortedPlaces =
-          sortByDistance(locationlist: places, position: position);
-      await isar.writeTxn(() async {
-        isar.places.putAll(sortedPlaces);
-      });
-    } else {
-      await isar.writeTxn(() async {
-        isar.places.putAll(places);
-      });
-    }
-  }
 
-  double distanceFromMyLocation(
-      {required Position location, required Position mylocation}) {
-    double distance = Geolocator.distanceBetween(mylocation.longitude,
-            mylocation.latitude, location.longitude, location.latitude) /
-        1000;
-    return distance;
-  }
-
-  List<Place> sortByDistance(
-      {required List<Place> locationlist, required Position position}) {
-    List<Place> locationListWithDistance = [];
-
-    // associate location with distance
-    for (var place in locationlist) {
-      final location = Position.fromMap(
-        {"latitude": place.latlng!.lat, "longitude": place.latlng!.lon},
-      );
-      double distance = distanceFromMyLocation(
-        location: location,
-        mylocation: position,
-      );
-      locationListWithDistance.add(place.copyWith(
-        distance: distance,
-      ));
-    }
-    locationListWithDistance.sort((a, b) {
-      return a.distance?.compareTo(b.distance ?? 0) ?? 0;
+    await isar.writeTxn(() async {
+      isar.places.putAll(places);
     });
-
-    return locationListWithDistance;
   }
+
+  // double distanceFromMyLocation(
+  //     {required Position location, required Position mylocation}) {
+  //   double distance = Geolocator.distanceBetween(mylocation.longitude,
+  //           mylocation.latitude, location.longitude, location.latitude) /
+  //       1000;
+  //   return distance;
+  // }
+
+  // List<Place> sortByDistance(
+  //     {required List<Place> locationlist, required Position position}) {
+  //   List<Place> locationListWithDistance = [];
+
+  //   // associate location with distance
+  //   for (var place in locationlist) {
+  //     final location = Position.fromMap(
+  //       {"latitude": place.latlng!.lat, "longitude": place.latlng!.lon},
+  //     );
+  //     double distance = distanceFromMyLocation(
+  //       location: location,
+  //       mylocation: position,
+  //     );
+  //     locationListWithDistance.add(place.copyWith(
+  //       distance: distance,
+  //     ));
+  //   }
+  //   locationListWithDistance.sort((a, b) {
+  //     return a.distance?.compareTo(b.distance ?? 0) ?? 0;
+  //   });
+
+  //   return locationListWithDistance;
+  // }
 
   @override
   Future<void> init() async {
@@ -173,4 +166,25 @@ extension ListX on List<Place> {
     }
     return unique;
   }
+}
+
+Future<void> appendPlaces(ComputeData computeData) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(
+      computeData.rootIsolateToken);
+  final directory = await getApplicationDocumentsDirectory();
+  final isar = await Isar.open(
+    [PlaceSchema],
+    directory: directory.path,
+    name: 'places',
+  );
+
+  final decoded = Compress.decode(computeData.encodedPlaces);
+  final data = jsonDecode(decoded);
+  final places = (data as List).map((e) {
+    return Place.fromJson(e);
+  }).toList();
+
+  await isar.writeTxn(() async {
+    isar.places.putAll(places);
+  });
 }

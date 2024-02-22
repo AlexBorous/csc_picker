@@ -32,64 +32,59 @@ const PlaceSchema = CollectionSchema(
       name: r'countryName',
       type: IsarType.string,
     ),
-    r'distance': PropertySchema(
-      id: 3,
-      name: r'distance',
-      type: IsarType.double,
-    ),
     r'emoji': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'emoji',
       type: IsarType.string,
     ),
     r'hashCode': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'hashCode',
       type: IsarType.long,
     ),
     r'labelEn': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'labelEn',
       type: IsarType.string,
     ),
     r'latlng': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'latlng',
       type: IsarType.object,
       target: r'Coordinates',
     ),
     r'modificationDate': PropertySchema(
-      id: 8,
+      id: 7,
       name: r'modificationDate',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 9,
+      id: 8,
       name: r'name',
       type: IsarType.string,
     ),
     r'placeId': PropertySchema(
-      id: 10,
+      id: 9,
       name: r'placeId',
       type: IsarType.string,
     ),
     r'population': PropertySchema(
-      id: 11,
+      id: 10,
       name: r'population',
       type: IsarType.long,
     ),
     r'searchString': PropertySchema(
-      id: 12,
+      id: 11,
       name: r'searchString',
       type: IsarType.string,
     ),
     r'searchWords': PropertySchema(
-      id: 13,
+      id: 12,
       name: r'searchWords',
       type: IsarType.stringList,
     ),
     r'timeZone': PropertySchema(
-      id: 14,
+      id: 13,
       name: r'timeZone',
       type: IsarType.string,
     )
@@ -237,23 +232,22 @@ void _placeSerialize(
   writer.writeString(offsets[0], object.asciiName);
   writer.writeString(offsets[1], object.code);
   writer.writeString(offsets[2], object.countryName);
-  writer.writeDouble(offsets[3], object.distance);
-  writer.writeString(offsets[4], object.emoji);
-  writer.writeLong(offsets[5], object.hashCode);
-  writer.writeString(offsets[6], object.labelEn);
+  writer.writeString(offsets[3], object.emoji);
+  writer.writeLong(offsets[4], object.hashCode);
+  writer.writeString(offsets[5], object.labelEn);
   writer.writeObject<Coordinates>(
-    offsets[7],
+    offsets[6],
     allOffsets,
     CoordinatesSchema.serialize,
     object.latlng,
   );
-  writer.writeString(offsets[8], object.modificationDate);
-  writer.writeString(offsets[9], object.name);
-  writer.writeString(offsets[10], object.placeId);
-  writer.writeLong(offsets[11], object.population);
-  writer.writeString(offsets[12], object.searchString);
-  writer.writeStringList(offsets[13], object.searchWords);
-  writer.writeString(offsets[14], object.timeZone);
+  writer.writeString(offsets[7], object.modificationDate);
+  writer.writeString(offsets[8], object.name);
+  writer.writeString(offsets[9], object.placeId);
+  writer.writeLong(offsets[10], object.population);
+  writer.writeString(offsets[11], object.searchString);
+  writer.writeStringList(offsets[12], object.searchWords);
+  writer.writeString(offsets[13], object.timeZone);
 }
 
 Place _placeDeserialize(
@@ -266,19 +260,18 @@ Place _placeDeserialize(
     asciiName: reader.readString(offsets[0]),
     code: reader.readString(offsets[1]),
     countryName: reader.readStringOrNull(offsets[2]),
-    distance: reader.readDoubleOrNull(offsets[3]),
-    emoji: reader.readStringOrNull(offsets[4]),
-    labelEn: reader.readStringOrNull(offsets[6]),
+    emoji: reader.readStringOrNull(offsets[3]),
+    labelEn: reader.readStringOrNull(offsets[5]),
     latlng: reader.readObjectOrNull<Coordinates>(
-      offsets[7],
+      offsets[6],
       CoordinatesSchema.deserialize,
       allOffsets,
     ),
-    modificationDate: reader.readStringOrNull(offsets[8]),
-    name: reader.readString(offsets[9]),
-    placeId: reader.readString(offsets[10]),
-    population: reader.readLongOrNull(offsets[11]),
-    timeZone: reader.readString(offsets[14]),
+    modificationDate: reader.readStringOrNull(offsets[7]),
+    name: reader.readString(offsets[8]),
+    placeId: reader.readString(offsets[9]),
+    population: reader.readLongOrNull(offsets[10]),
+    timeZone: reader.readString(offsets[13]),
   );
   object.id = id;
   return object;
@@ -298,32 +291,30 @@ P _placeDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readDoubleOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (reader.readLong(offset)) as P;
-    case 6:
+    case 5:
       return (reader.readStringOrNull(offset)) as P;
-    case 7:
+    case 6:
       return (reader.readObjectOrNull<Coordinates>(
         offset,
         CoordinatesSchema.deserialize,
         allOffsets,
       )) as P;
-    case 8:
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readString(offset)) as P;
     case 9:
       return (reader.readString(offset)) as P;
     case 10:
-      return (reader.readString(offset)) as P;
-    case 11:
       return (reader.readLongOrNull(offset)) as P;
-    case 12:
+    case 11:
       return (reader.readString(offset)) as P;
-    case 13:
+    case 12:
       return (reader.readStringList(offset) ?? []) as P;
-    case 14:
+    case 13:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -1556,84 +1547,6 @@ extension PlaceQueryFilter on QueryBuilder<Place, Place, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'countryName',
         value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'distance',
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'distance',
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'distance',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterFilterCondition> distanceBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'distance',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
       ));
     });
   }
@@ -3051,18 +2964,6 @@ extension PlaceQuerySortBy on QueryBuilder<Place, Place, QSortBy> {
     });
   }
 
-  QueryBuilder<Place, Place, QAfterSortBy> sortByDistance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'distance', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterSortBy> sortByDistanceDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'distance', Sort.desc);
-    });
-  }
-
   QueryBuilder<Place, Place, QAfterSortBy> sortByEmoji() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'emoji', Sort.asc);
@@ -3209,18 +3110,6 @@ extension PlaceQuerySortThenBy on QueryBuilder<Place, Place, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Place, Place, QAfterSortBy> thenByDistance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'distance', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Place, Place, QAfterSortBy> thenByDistanceDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'distance', Sort.desc);
-    });
-  }
-
   QueryBuilder<Place, Place, QAfterSortBy> thenByEmoji() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'emoji', Sort.asc);
@@ -3364,12 +3253,6 @@ extension PlaceQueryWhereDistinct on QueryBuilder<Place, Place, QDistinct> {
     });
   }
 
-  QueryBuilder<Place, Place, QDistinct> distinctByDistance() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'distance');
-    });
-  }
-
   QueryBuilder<Place, Place, QDistinct> distinctByEmoji(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -3461,12 +3344,6 @@ extension PlaceQueryProperty on QueryBuilder<Place, Place, QQueryProperty> {
   QueryBuilder<Place, String?, QQueryOperations> countryNameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'countryName');
-    });
-  }
-
-  QueryBuilder<Place, double?, QQueryOperations> distanceProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'distance');
     });
   }
 

@@ -20,8 +20,7 @@ class Place {
   final String? labelEn;
   final Coordinates? latlng;
   final String? emoji;
-  @SortProperty(property: 'distance', sort: Sort.asc)
-  final double? distance;
+
   @Index(
     type: IndexType.value,
     caseSensitive: false,
@@ -41,7 +40,6 @@ class Place {
     this.labelEn,
     this.latlng,
     this.emoji,
-    this.distance,
   });
 
   factory Place.fromGeoDB(Map<String, dynamic> json) {
@@ -71,7 +69,6 @@ class Place {
       countryName: json['country_name'],
       modificationDate: json['modification_date'],
       labelEn: json['label_en'],
-      distance: double.tryParse(json['distance']?.toString() ?? '') ?? 0.0,
       latlng: Coordinates.fromJson(json['latlng']),
       emoji: json['emoji'],
     );
@@ -89,7 +86,6 @@ class Place {
       'modification_date': modificationDate,
       'label_en': labelEn,
       'latlng': latlng?.toJson() ?? {},
-      'distance': distance?.toString() ?? 0.0,
       'emoji': emoji ?? '',
     };
   }
@@ -120,7 +116,6 @@ class Place {
       labelEn: labelEn ?? this.labelEn,
       latlng: latlng ?? this.latlng,
       emoji: emoji ?? this.emoji,
-      distance: distance ?? this.distance,
     );
   }
 

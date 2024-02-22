@@ -5,7 +5,6 @@ import 'package:csc_picker/model/place.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum Layout { vertical, horizontal }
@@ -16,7 +15,6 @@ class CSCPicker extends StatefulWidget {
     super.key,
     required this.timezone,
     this.layout = Layout.horizontal,
-    this.position,
     this.placeHolder = "Select a place",
     this.title,
     this.clearButtonContent = const Text("Clear"),
@@ -35,7 +33,6 @@ class CSCPicker extends StatefulWidget {
   final String timezone;
   // clear button parameters
   final bool showClearButton;
-  final Position? position;
   final Widget clearButtonContent;
   final bool showSearchBox;
   final bool showFavoriteItems;
@@ -59,6 +56,7 @@ class CSCPicker extends StatefulWidget {
 }
 
 class CSCPickerState extends State<CSCPicker> {
+  Place? _selectedPlace;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -69,7 +67,6 @@ class CSCPickerState extends State<CSCPicker> {
             BlocProvider(
               create: (context) => DatabaseCubit(
                 timezone: widget.timezone,
-                position: widget.position,
               ),
               child: Expanded(
                 child: BlocBuilder<DatabaseCubit, DatabaseState>(
@@ -77,6 +74,7 @@ class CSCPickerState extends State<CSCPicker> {
                     return Skeletonizer(
                       enabled: state.places.isEmpty,
                       child: DropdownSearch<Place>(
+                        selectedItem: _selectedPlace,
                         popupProps: PopupPropsMultiSelection.dialog(
                           listViewProps: const ListViewProps(
                             padding: EdgeInsets.zero,
@@ -155,9 +153,15 @@ class CSCPickerState extends State<CSCPicker> {
                         },
                         onChanged: (value) {
                           widget.onChange?.call(value);
+                          setState(() {
+                            _selectedPlace = value;
+                          });
                         },
                         onSaved: (newValue) {
                           widget.onSave?.call(newValue);
+                          setState(() {
+                            _selectedPlace = newValue;
+                          });
                         },
                       ),
                     );
