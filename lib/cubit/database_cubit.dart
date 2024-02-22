@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:developer';
 
 import 'package:csc_picker/compress/compress.dart';
 import 'package:csc_picker/model/place.dart';
@@ -23,6 +24,9 @@ class DatabaseCubit extends Cubit<DatabaseState> {
   void init() async {
     await state.isar.init();
     if (state.isar.hasData()) {
+      debugPrint('Data already found in database from init');
+      final places = await state.isar.getPlaces(timezone: timezone);
+      emit(state.copyWith(places: [...places], reccomendedPlaces: [...places]));
       return;
     }
     final encodedPlaces = await rootBundle
@@ -35,18 +39,19 @@ class DatabaseCubit extends Cubit<DatabaseState> {
     if (state.isar.hasData()) {
       debugPrint('Data found in database');
       final places = await state.isar.getPlaces(timezone: timezone);
-      emit(state.copyWith(places: [...places]));
+      emit(state.copyWith(places: [...places], reccomendedPlaces: [...places]));
     } else {
       debugPrint('No data found in database');
       await state.isar.initPlaces();
       final places = await state.isar.getPlaces(timezone: timezone);
-      emit(state.copyWith(places: [...places]));
+      emit(state.copyWith(places: [...places], reccomendedPlaces: [...places]));
     }
   }
 
   Future<List<Place>> filterPlaces(String query) async {
     if (query.isEmpty) {
-      return state.places;
+      log('Query is empty');
+      return state.reccomendedPlaces;
     }
     final places = await state.isar
         .getPlaces(query: query.toLowerCase(), timezone: timezone);
@@ -55,11 +60,19 @@ class DatabaseCubit extends Cubit<DatabaseState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     if (state.isar.isOpen()) {
-      state.isar.dispose();
+      log('Closing database');
+      await state.isar.dispose();
     }
     return super.close();
+  }
+
+  @override
+  void onError(Object error, StackTrace stackTrace) async {
+    debugPrint('Error: $error');
+    await state.isar.dispose();
+    super.onError(error, stackTrace);
   }
 }
 

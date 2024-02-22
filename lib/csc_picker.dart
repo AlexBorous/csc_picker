@@ -80,7 +80,8 @@ class CSCPickerState extends State<CSCPicker> {
                 child: BlocBuilder<DatabaseCubit, DatabaseState>(
                   builder: (context, state) {
                     return Skeletonizer(
-                      enabled: state.places.isEmpty,
+                      enabled: state.places.isEmpty &&
+                          state.reccomendedPlaces.isEmpty,
                       child: DropdownSearch<Place>(
                         selectedItem: _selectedPlace,
                         popupProps: PopupPropsMultiSelection.dialog(
@@ -186,9 +187,6 @@ class CSCPickerState extends State<CSCPicker> {
 
   @override
   void dispose() {
-    if (mounted) {
-      context.read<DatabaseCubit>().close();
-    }
     super.dispose();
   }
 }

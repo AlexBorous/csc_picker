@@ -2,17 +2,23 @@ part of 'database_cubit.dart';
 
 @immutable
 class DatabaseState {
-  const DatabaseState({required this.isar, this.places = const []});
+  const DatabaseState({
+    required this.isar,
+    this.places = const [],
+    this.reccomendedPlaces = const [],
+  });
   final DB isar;
   final List<Place> places;
-
+  final List<Place> reccomendedPlaces;
   DatabaseState copyWith({
     DB? isar,
     List<Place>? places,
+    List<Place>? reccomendedPlaces,
   }) {
     return DatabaseState(
       isar: isar ?? this.isar,
       places: places ?? this.places,
+      reccomendedPlaces: reccomendedPlaces ?? this.reccomendedPlaces,
     );
   }
 }
@@ -152,7 +158,7 @@ Future<void> appendPlaces(ComputeData computeData) async {
     return Place.fromJson(e);
   }).toList();
 
-  await isar.writeTxn(() async {
-    isar.places.putAll(places);
+  isar.writeTxnSync(() {
+    isar.places.putAllSync(places);
   });
 }
