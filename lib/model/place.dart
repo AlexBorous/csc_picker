@@ -121,7 +121,7 @@ class Place {
 
   @override
   String toString() {
-    return '$name, $countryName $emoji';
+    return '$name, $labelEn $emoji';
   }
 
   @override

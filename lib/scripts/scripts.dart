@@ -23,8 +23,8 @@ void refreshData({String? fileName}) async {
 }
 
 Future<List<Place>> decodeCompressedData({String? fileName}) async {
-  final _fileName = fileName ?? 'data.json';
-  final json = await File('$_fileName.gz').readAsString();
+  final name = fileName ?? 'data.json';
+  final json = await File('$name.gz').readAsString();
   final decoded = Compress.decode(json);
   final data = jsonDecode(decoded);
   final countries = (data as List).map((e) {
