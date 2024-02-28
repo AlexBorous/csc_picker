@@ -120,6 +120,7 @@ class LocalDB extends DB {
       [PlaceSchema],
       directory: dir.path,
       name: 'places',
+      maxSizeMiB: 256,
     );
   }
 
@@ -150,6 +151,7 @@ Future<void> appendPlaces(ComputeData computeData) async {
     [PlaceSchema],
     directory: directory.path,
     name: 'places',
+    maxSizeMiB: 256,
   );
 
   final decoded = Compress.decode(computeData.encodedPlaces);
