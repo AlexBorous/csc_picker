@@ -187,6 +187,7 @@ class CSCPickerState extends State<CSCPicker> {
 
   @override
   void dispose() {
+    _focusNode.dispose();
     super.dispose();
   }
 }

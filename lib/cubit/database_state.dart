@@ -120,7 +120,7 @@ class LocalDB extends DB {
       [PlaceSchema],
       directory: dir.path,
       name: 'places',
-      maxSizeMiB: 256,
+      maxSizeMiB: 100,
     );
   }
 
@@ -151,7 +151,7 @@ Future<void> appendPlaces(ComputeData computeData) async {
     [PlaceSchema],
     directory: directory.path,
     name: 'places',
-    maxSizeMiB: 256,
+    maxSizeMiB: 100,
   );
 
   final decoded = Compress.decode(computeData.encodedPlaces);
@@ -163,4 +163,5 @@ Future<void> appendPlaces(ComputeData computeData) async {
   isar.writeTxnSync(() {
     isar.places.putAllSync(places);
   });
+  await isar.close();
 }
