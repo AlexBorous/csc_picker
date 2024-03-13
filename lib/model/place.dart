@@ -53,8 +53,9 @@ class Place {
       modificationDate: json['modification_date'],
       countryName: json['cou_name_en'],
       labelEn: json['label_en'],
-      latlng:
-          json['latlng'] != null ? Coordinates.fromJson(json['latlng']) : null,
+      latlng: json['coordinates'] != null
+          ? Coordinates.fromJson(json['coordinates'])
+          : null,
     );
   }
 
