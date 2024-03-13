@@ -83,12 +83,27 @@ class LocalDB extends DB {
         }
       }
     }
-
     //sort by best match
     places.sort((a, b) {
       final aScore = a.searchString.similarityTo(query);
       final bScore = b.searchString.similarityTo(query);
       return bScore.compareTo(aScore);
+    });
+    places.sort((a, b) => b.population!.compareTo(a.population!));
+    places.sort((a, b) {
+      if (a.timeZone == timezone) {
+        return -1;
+      }
+      if (b.timeZone == timezone) {
+        return 1;
+      }
+      if (a.searchString.similarityTo(query) > 0.7) {
+        return -1;
+      }
+      if (b.searchString.similarityTo(query) > 0.7) {
+        return 1;
+      }
+      return 0;
     });
     return places;
   }
