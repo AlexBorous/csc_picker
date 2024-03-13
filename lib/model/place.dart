@@ -56,6 +56,7 @@ class Place {
       latlng: json['coordinates'] != null
           ? Coordinates.fromJson(json['coordinates'])
           : null,
+      emoji: json['emoji'],
     );
   }
 
